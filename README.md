@@ -1,2 +1,2 @@
-# modularity_controllability
-Role of modularity in controllability of structural brain networks
+# Role of Modularity in Controllability of Structural Brain Networks
+
