@@ -3,7 +3,7 @@ clc; clear; close all;
 addpath(genpath(['/Users/sppatankar/Developer/modularity_controllability/'...
     'Helper']))
 
-data_set = 'd_1';
+data_set = 'd_2_1';
 
 if strcmp(data_set, 'd_1')
     load(['/Users/sppatankar/Developer/modularity_controllability/Data/' ...
