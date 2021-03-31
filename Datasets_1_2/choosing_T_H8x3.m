@@ -1,49 +1,41 @@
 clc; clear; close all;
 
-data_set = 'd_2_2';
+addpath(genpath(['/Users/sppatankar/Developer/modularity_controllability/'...
+    'Helper']))
+
+data_set = 'd_2_1';
 
 if strcmp(data_set, 'd_1')
-    load('ncomm_8_3_qa_gfa.mat'); % for QA weighted streamlines
+    load(['/Users/sppatankar/Developer/modularity_controllability/Data/' ...
+        'Human_8_3/ncomm_8_3_qa_gfa.mat']); % for QA weighted streamlines
 end
 if strcmp(data_set, 'd_2_1') || strcmp(data_set, 'd_2_2')
-    load('data8x3fullscale.mat'); % for streamlines
+    load(['/Users/sppatankar/Developer/modularity_controllability/Data/' ...
+        'Human_8_3/data8x3fullscale.mat']); % for streamlines
 end
-
-load('/Volumes/My Passport/Modularity_2/Human_8_3/yeo_atlas.mat')
-c = yeo_atlas;
-% for reference:
-% VIS = 1;
-% SOM = 2;
-% DOR = 3;
-% VEN = 4;
-% LIM = 5;
-% FPC = 6;
-% DMN = 7;
-% SUB = 8;
 
 %% Generate Data Structure
 
 % input parameters for controllability metrics
 T_rng = 1:1:50; % time horizon for controllability
-nor = 0; % matrix normalization flag for stability
 thresh = 1; % threshold for slower and faster modes for modal control
 
 if strcmp(data_set, 'd_1') % QA with normal prior
     all_As = qaNetworks(:,:,3); % Scale 125: 234 regions
-    path_1 = ['/Volumes/My Passport/Modularity_2/Human_8_3_x2/' ...
-        'Data_Scripts/WSBM_Results']; 
+    path_1 = ['/Users/sppatankar/Developer/modularity_controllability/Data/' ...
+        'Human_8_3/Data_Scripts/WSBM_Results']; 
     k = 12; % number of communities for QA  with Gaussian prior
 end
 if strcmp(data_set, 'd_2_1') % streamlines with log-normal prior
     all_As = A{1,3}; % Scale 125: 234 regions
-    path_1 = ['/Volumes/My Passport/Modularity_2/Human_8_3_x2/' ...
-        'Data_Scripts_Streamlines_LogNormal/WSBM_Results_Streamlines_LN'];
+    path_1 = ['/Users/sppatankar/Developer/modularity_controllability/Data/' ...
+        'Human_8_3/Data_Scripts_Streamlines_LogNormal/WSBM_Results_Streamlines_LN'];
     k = 14; % number of communities for streamlines with LN prior
 end
 if strcmp(data_set, 'd_2_2') % streamlines with Gaussian prior
     all_As = A{1,3}; % Scale 125: 234 regions
-    path_1 = ['/Volumes/My Passport/Modularity_2/Human_8_3_x2/' ...
-        'Data_Scripts_Streamlines_Normal/WSBM_Results_Streamlines_Normal']; 
+    path_1 = ['/Users/sppatankar/Developer/modularity_controllability/Data/' ...
+        'Human_8_3/Data_Scripts_Streamlines_Normal/WSBM_Results_Streamlines_Normal']; 
     k = 12; % number of communities for streamlines with Gaussian prior
 end
 
@@ -149,26 +141,24 @@ for T_idx = 1:length(T_rng)
 
             load(fullfile(path_1, path_2, path_3)); % loads 'Best_Model', 'Models', and 'Scores'
 
-            Ci = zeros(size(A, 1), length(Models)); % multiple fitted WSBMs 
-            for idx = 1:length(Models)
-                model = Models(idx);
-                labels = assign_communities(model{1,1});
-                Ci(:, idx) = labels;
-            end
+%             Ci = zeros(size(A, 1), length(Models)); % multiple fitted WSBMs 
+%             for idx = 1:length(Models)
+%                 model = Models(idx);
+%                 labels = assign_communities(model{1,1});
+%                 Ci(:, idx) = labels;
+%             end
 
-            M = central_partition(Ci);
+            M = central_partition(Models);
             subj_struct.M = M;
 
             subj_struct.part_coeff = participation_coef(A, M);
             subj_struct.within_mod_z = module_degree_zscore(A, M);
             subj_struct.node_strength = strengths_und(A);
-
-            % subj_struct.sc = node_level_spectral_metric(A); 
-            % subj_struct.sc = diag(A^2); 
+ 
             subj_struct.sc = diag(expm(A)); % subgraph centrality
 
-            subj_struct.avg_ctrb_disc = avg_ctrb_disc(A, T_avg, nor);
-            subj_struct.mod_ctrb_disc = mod_ctrb_disc(A, 1:size(A,1), thresh, nor);
+            subj_struct.avg_ctrb_disc = avg_ctrb_disc(A, T_avg);
+            subj_struct.mod_ctrb_disc = mod_ctrb_disc(A, 1:size(A,1), thresh);
 
             subj_struct.min_eng = min_eng_0_1_node(A, T_eng, 'disc');
 
@@ -320,8 +310,6 @@ end
 
 %% Make Figures
 
-path_1 = '/Users/sppatankar/Desktop/Projects/Modularity/Re-submission/Choosing_T/';
-
 f_1 = figure('color', 'w');
 hold on
 plot(T_rng, r_SC_NS_MIN, '.', 'MarkerFaceColor', 'k', 'MarkerSize', 25, 'LineWidth', 0.1);
@@ -331,8 +319,6 @@ title('r(SC, MIN) vs. T', ...
     'FontSize', 15);
 prettify
 hold off
-path_2 = strcat('r(SC, MIN)_', data_set);
-saveas(gcf, fullfile(path_1, path_2), 'epsc')
 
 f_2 = figure('color', 'w');
 hold on
@@ -343,8 +329,6 @@ title('r(SC, AVG) vs. T', ...
     'FontSize', 15);
 prettify
 hold off
-path_2 = strcat('r(SC, AVG)_', data_set);
-saveas(gcf, fullfile(path_1, path_2), 'epsc')
 
 % f_3 = figure('color', 'w');
 % hold on
@@ -356,7 +340,6 @@ saveas(gcf, fullfile(path_1, path_2), 'epsc')
 % prettify
 % hold off
 % path_2 = strcat('r(SC, MOD)_', data_set);
-% saveas(gcf, fullfile(path_1, path_2), 'epsc')
 
 f_4 = figure('color', 'w');
 hold on
@@ -368,7 +351,6 @@ title('p(SC, MIN) vs. T', ...
 prettify
 hold off
 path_2 = strcat('p(SC, MIN)_', data_set);
-saveas(gcf, fullfile(path_1, path_2), 'epsc')
 
 f_5 = figure('color', 'w');
 hold on
@@ -380,7 +362,6 @@ title('p(SC, AVG) vs. T', ...
 prettify
 hold off
 path_2 = strcat('p(SC, AVG)_', data_set);
-saveas(gcf, fullfile(path_1, path_2), 'epsc')
 
 % f_6 = figure('color', 'w');
 % hold on
@@ -392,6 +373,5 @@ saveas(gcf, fullfile(path_1, path_2), 'epsc')
 % prettify
 % hold off
 % path_2 = strcat('p(SC, MOD)_', data_set);
-% saveas(gcf, fullfile(path_1, path_2), 'epsc')
 
 

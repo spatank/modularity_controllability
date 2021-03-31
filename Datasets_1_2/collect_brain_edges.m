@@ -1,6 +1,7 @@
 clc; close all; clear;
 
-load('ncomm_8_3_qa_gfa.mat');
+load(['/Users/sppatankar/Developer/modularity_controllability/Data/', ...
+    'Human_8_3/ncomm_8_3_qa_gfa.mat']);
 
 %% Collect edge weights
 
@@ -34,17 +35,6 @@ for subj = 1:num_subjects
 end
 
 %% Plot
-
-% pd = fitdist(edge_weights_all, 'Normal');
-% 
-% x_vec = linspace(min(edge_weights_all), max(edge_weights_all), 100);
-% y_vec = pdf(pd, x_vec);
-
-% figure;
-% hold on
-% histogram(edge_weights_all);
-% plot(x_vec, y_vec)
-% hold off
 
 figure;
 hist = histfit(edge_weights_all);

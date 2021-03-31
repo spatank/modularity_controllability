@@ -1,6 +1,7 @@
-% clc; close all; clear;
+clc; close all; clear;
 
-load('data8x3fullscale.mat')
+load(['/Users/sppatankar/Developer/modularity_controllability/Data/', ...
+    'Human_8_3/data8x3fullscale.mat']);
 
 %% Collect edge weights
 
@@ -33,21 +34,12 @@ end
 
 figure;
 histogram(edge_weights_all);
-% xlabel('Edge Weight', 'FontSize', 15);
-% ylabel('Frequency', 'FontSize', 15);
-% title('Fat-tailed', 'FontSize', 15);
+xlabel('Edge Weight', 'FontSize', 15);
+ylabel('Frequency', 'FontSize', 15);
+title('Fat-tailed', 'FontSize', 15);
 
 figure;
 histogram(log(edge_weights_all));
 xlabel('Log Edge Weight', 'FontSize', 15);
 ylabel('Frequency', 'FontSize', 15);
 title('Dataset 1: Log Edge Weights', 'FontSize', 15);
-
-% figure;
-% hist = histfit(log(edge_weights_all));
-% hist(1).FaceColor = [.8 .8 1];
-% hist(2).Color = [.2 .2 .2];
-% xlabel('Log Edge Weight', 'FontSize', 15);
-% ylabel('Frequency', 'FontSize', 15);
-% title('Dataset 1: Log of Edge Weights', 'FontSize', 15);
-% [h, p, stats] = chi2gof(log(edge_weights_all));

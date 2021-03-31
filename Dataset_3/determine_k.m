@@ -1,9 +1,7 @@
 clc; clear; close all;
 
-path_1 = '/Volumes/Elements/Modularity/Human_10_x2/WSBM_Results';
-% streamlines log-normal prior
-% path_1 = '/Volumes/Elements/Modularity/Human_10/WSBM_Results';
-% % streamlines normal prior
+path_1 = ['/Users/sppatankar/Developer/modularity_controllability'...
+    '/Data/Human_10/Data_Scripts/WSBM_Results']; % LN
 
 ks = 6:15;
 
@@ -16,7 +14,6 @@ for idx = 1:length(ks)
     log_evidence_subj = zeros(1, length(1:10));
     for subj = 1:10
         path_3 = sprintf('subj_%d_k_%d_human_10_LN.mat', subj, k);
-        % path_3 = sprintf('subj_%d_k_%d_human_10.mat', subj, k);
         load(fullfile(path_1, path_2, path_3)); 
         % loads in Scores amongst other variables
         log_evidence_subj(subj) = mean(Scores);

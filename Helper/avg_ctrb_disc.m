@@ -1,4 +1,4 @@
-function v = avg_ctrb_disc(A, T, nor)
+function v = avg_ctrb_disc(A, T)
 % Function for computing discrete average controllability for each node.
 % Unsure of numerical stability, don't use for publication results
 % Infinite horizon code from Shi Gu et al. 2015 doi: 10.1038/ncomms9414
@@ -6,20 +6,8 @@ function v = avg_ctrb_disc(A, T, nor)
 % Inputs:
 % A:    N x N continuous-time stable adjacency matrix
 % T:    1 x 1 scalar integer for time horizon (>0)
-% nor:  normalization constant (default: 1+eig_largest) (SP)
 % Outputs:
 % v:    N x 1 vector of average controllability values
-
-% Normalize
-% if nor == 1
-%     A = A./(1+eigs(A,1));
-% end
-if nargin ~= 3
-    nor = (1+eigs(A,1));
-    A = A./nor;
-else
-    A = A./nor;
-end
 
 % System Parameters
 N = size(A,1);

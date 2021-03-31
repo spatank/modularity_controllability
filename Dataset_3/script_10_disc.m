@@ -1,35 +1,20 @@
 clc; close all; clear;
 
-data_set = 'd_3_1';
+data_set = 'd_3';
 
-load('/Volumes/My Passport/Modularity_2/Human_8_3/yeo_atlas.mat')
-c = yeo_atlas;
-% for reference:
-% VIS = 1;
-% SOM = 2;
-% DOR = 3;
-% VEN = 4;
-% LIM = 5;
-% FPC = 6;
-% DMN = 7;
-% SUB = 8;
+addpath(genpath(['/Users/sppatankar/Developer/modularity_controllability/'...
+    'Helper']))
 
 %% Generate Data Structure
 
 % input parameters for controllability metrics
 T_avg = 4; % time horizon for average controllability and minimum control energy
 T_eng = 4; % time horizon for minimum control energy
-nor = 0; % matrix normalization flag for stability
 thresh = 1; % threshold for slower and faster modes for modal control
 
-if strcmp(data_set, 'd_3_1')
-    path_1 = '/Volumes/My Passport/Modularity_2/Human_10_x2/WSBM_Results/'; % LN
-    k = 10; % number of communities; with LogNormal prior
-end
-if strcmp(data_set, 'd_3_2')
-    path_1 = '/Volumes/My Passport/Modularity_2/Human_10/WSBM_Results/'; % Normal
-    k = 11; % number of communities; with Normal prior
-end
+path_1 = ['/Users/sppatankar/Developer/modularity_controllability'...
+    '/Data/Human_10/Data_Scripts/WSBM_Results']; % LN
+k = 10; % number of communities; with LogNormal prior
 
 num_subjects = 10;
 
@@ -49,27 +34,23 @@ for subj = 1:num_subjects
     
     A_raw = connectivity;
     
-    A = (A_raw/(eigs(A_raw,1)));
+    A = (A_raw/(eigs(A_raw, 1)));
     
     subj_struct.A = A;
     
-    if strcmp(data_set, 'd_3_1')
-        path_3 = sprintf('k_%d/subj_%d_k_%d_human_10_LN.mat', k, subj, k);
-    end
-    if strcmp(data_set, 'd_3_2')
-        path_3 = sprintf('k_%d/subj_%d_k_%d_human_10.mat', k, subj, k);
-    end
-
+    path_3 = sprintf('k_%d/subj_%d_k_%d_human_10_LN.mat', k, subj, k);
     load(fullfile(path_1, path_3)); % loads 'Best_Model', 'Models', and 'Scores'
 
-    Ci = zeros(size(A, 1), length(Models)); % multiple fitted WSBMs 
-    for idx = 1:length(Models)
-        model = Models(idx);
-        labels = assign_communities(model{1, 1});
-        Ci(:, idx) = labels;
-    end
-    
-    M = central_partition(Ci);
+%     Ci = zeros(size(A, 1), length(Models)); % multiple fitted WSBMs 
+%     for idx = 1:length(Models)
+%         model = Models(idx);
+%         labels = assign_communities(model{1, 1});
+%         Ci(:, idx) = labels;
+%     end
+%     
+%     M = central_partition(Ci);
+
+    M = central_partition(Models);
     subj_struct.M = M;
 
     subj_struct.part_coeff = participation_coef(A, M);
@@ -78,8 +59,8 @@ for subj = 1:num_subjects
 
     subj_struct.spec_met = diag(expm(A));
     
-    subj_struct.avg_ctrb_disc = avg_ctrb_disc(A, T_avg, nor);
-    subj_struct.mod_ctrb_disc = mod_ctrb_disc(A, 1:size(A, 1), thresh, nor); 
+    subj_struct.avg_ctrb_disc = avg_ctrb_disc(A, T_avg);
+    subj_struct.mod_ctrb_disc = mod_ctrb_disc(A, 1:size(A, 1), thresh); 
     
     subj_struct.min_eng = min_eng_0_1_node(A, T_eng, 'disc'); 
     

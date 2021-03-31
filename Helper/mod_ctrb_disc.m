@@ -1,4 +1,4 @@
-function [ phi_p, phi_t ] = mod_ctrb_disc(A, i, thresh, nor)
+function [ phi_p, phi_t ] = mod_ctrb_disc(A, i, thresh)
 % adapted from Jeni's code
 % Calculate persistent and transient modal controllability of node i. 
 % Intuitively, nodes with high persistent controllability will result in
@@ -13,7 +13,6 @@ function [ phi_p, phi_t ] = mod_ctrb_disc(A, i, thresh, nor)
 %           controllability. For example, if thresh is .1, this will
 %           use the 10% slowest modes for persistent controllability, and
 %           the 10% fastest modes for transient controllability.
-% nor       normalization constant (default: 1+eig_largest) (SP)
 
 % Outputs:
 % phi_p     Persistent controllability of the node (should be between 0 and
@@ -22,19 +21,7 @@ function [ phi_p, phi_t ] = mod_ctrb_disc(A, i, thresh, nor)
 
 % @author JStiso
 
-% Normalize
-% if nor==1
-%     A = A./(1+eigs(A,1));
-% end
-
-if nargin ~= 4
-    nor = (1+eigs(A,1));
-    A = A./nor;
-else
-    A = A./nor;
-end
-
-[V, D] = eig(A);
+[V, ~] = eig(A);
 lambda = eig(A);
 
 % get only the X% largest values
